@@ -2,6 +2,8 @@ package com.qaguru.batch19shop.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.qaguru.batch19shop.models.Product;
+import io.restassured.authentication.AuthenticationScheme;
+import io.restassured.authentication.BasicAuthScheme;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
@@ -48,20 +50,24 @@ public class ProductService {
         return product;
     }
 
-    public String saveANewProduct(Product product){
+    public String saveANewProduct(Product product,int expSc,String user, String password) {
         ValidatableResponse response = given().baseUri(baseUri)
                 .spec(specification)
                 .body(product)
-//                .with().auth().basic("maria","maria123")
+                .with().auth().basic(user, password)
                 .when()
                 .post("/")
                 .then()
                 .log().all()
-                .assertThat().statusCode(HttpStatus.SC_CREATED)
-                .assertThat().header("Location",containsString("/api/v1/products/"));
-        String location = response.extract().header("Location");
-        String id = location.substring(basePath.length()+1);
-        System.out.println("Product id - " +id);
+                .assertThat().statusCode(expSc);
+
+        String id = null;
+        if (response.extract().statusCode() == HttpStatus.SC_CREATED) {
+            response.assertThat().header("Location", containsString("/api/v1/products/"));
+            String location = response.extract().header("Location");
+            id = location.substring(basePath.length() + 1);
+            System.out.println("Product id - " + id);
+        }
         return id;
     }
 
@@ -69,6 +75,7 @@ public class ProductService {
         ValidatableResponse response = given()
                 .spec(specification)
                 .body(product)
+                .with().auth().basic("maria","maria123")
                 .when()
                 .put("/"+productId)
                 .then()
@@ -96,6 +103,7 @@ public class ProductService {
     public void deleteService(String productId) {
         given()
                 .spec(specification)
+                .with().auth().basic("maria","maria123")
                 .when()
                 .delete("/"+productId)
                 .then()
