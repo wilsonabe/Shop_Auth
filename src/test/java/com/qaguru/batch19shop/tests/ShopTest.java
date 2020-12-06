@@ -14,7 +14,7 @@ public class ShopTest {
         String file = "testdata/product.json";
         ProductService productService = new ProductService();
         Product product = productService.readProductDetails(file);
-        String productId = productService.saveANewProduct(product);
+        String productId = productService.saveANewProduct(product,HttpStatus.SC_CREATED,"maria","maria123");
         productService.findAProduct(productId,product,HttpStatus.SC_OK);
     }
     @Test
@@ -22,7 +22,7 @@ public class ShopTest {
         String file = "testdata/product.json";
         ProductService productService = new ProductService();
         Product product = productService.readProductDetails(file);
-        String productId = productService.saveANewProduct(product);
+        String productId = productService.saveANewProduct(product,HttpStatus.SC_CREATED,"maria","maria123");
 
         Product product2 = Product.builder()
                 .name("Samsung 20")
@@ -38,7 +38,7 @@ public class ShopTest {
         String file = "testdata/product.json";
         ProductService productService = new ProductService();
         Product product = productService.readProductDetails(file);
-        String productId = productService.saveANewProduct(product);
+        String productId = productService.saveANewProduct(product,HttpStatus.SC_CREATED,"maria","maria123");
         productService.deleteService(productId);
         productService.findAProduct(productId,null, HttpStatus.SC_NOT_FOUND);
     }
@@ -48,13 +48,19 @@ public class ShopTest {
         ProductService productService = new ProductService();
         List<Product> products = productService.readProductList(file);
         for(int i=0;i<products.size();i++){
-            productService.saveANewProduct(products.get(i));
+            productService.saveANewProduct(products.get(i),HttpStatus.SC_CREATED,"maria","maria123");
         }
         productService.findAllProducts(products);
 
     }
 
-
+    @Test
+    public void saveANewProductWithUnauthorized(){
+        String file = "testdata/product.json";
+        ProductService productService = new ProductService();
+        Product product = productService.readProductDetails(file);
+        String productId = productService.saveANewProduct(product,HttpStatus.SC_FORBIDDEN,"john", "john123");
+    }
 
 
 }
