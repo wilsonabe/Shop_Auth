@@ -30,6 +30,15 @@ public class ShopTest {
         productService.findAProduct(productId, product2);
     }
 
+    @Test
+    public void deleteAProduct(){
+        String file = "testdata/product.json";
+        ProductService productService = new ProductService();
+        Product product = productService.readProductDetails(file);
+        String productId = productService.saveANewProduct(product);
+        productService.deleteService(productId);
+    }
+
 
 
 
