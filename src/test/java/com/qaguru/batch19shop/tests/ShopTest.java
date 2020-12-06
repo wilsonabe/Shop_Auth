@@ -2,7 +2,10 @@ package com.qaguru.batch19shop.tests;
 
 import com.qaguru.batch19shop.models.Product;
 import com.qaguru.batch19shop.services.ProductService;
+import org.apache.http.HttpStatus;
 import org.testng.annotations.Test;
+
+import java.util.List;
 
 public class ShopTest {
 
@@ -12,7 +15,7 @@ public class ShopTest {
         ProductService productService = new ProductService();
         Product product = productService.readProductDetails(file);
         String productId = productService.saveANewProduct(product);
-        productService.findAProduct(productId,product);
+        productService.findAProduct(productId,product,HttpStatus.SC_OK);
     }
     @Test
     public void updateAProduct(){
@@ -27,7 +30,7 @@ public class ShopTest {
                 .price(1700.99)
                 .build();
         productService.updateAProduct(productId,product2);
-        productService.findAProduct(productId, product2);
+        productService.findAProduct(productId, product2,HttpStatus.SC_OK);
     }
 
     @Test
@@ -37,6 +40,18 @@ public class ShopTest {
         Product product = productService.readProductDetails(file);
         String productId = productService.saveANewProduct(product);
         productService.deleteService(productId);
+        productService.findAProduct(productId,null, HttpStatus.SC_NOT_FOUND);
+    }
+    @Test
+    public void findAllProducts(){
+        String file = "testdata/productarray.json";
+        ProductService productService = new ProductService();
+        List<Product> products = productService.readProductList(file);
+        for(int i=0;i<products.size();i++){
+            productService.saveANewProduct(products.get(i));
+        }
+        productService.findAllProducts(products);
+
     }
 
 

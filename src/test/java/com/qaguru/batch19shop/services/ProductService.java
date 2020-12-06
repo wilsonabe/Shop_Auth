@@ -12,7 +12,10 @@ import org.apache.http.HttpStatus;
 import org.testng.Assert;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.containsString;
@@ -47,11 +50,9 @@ public class ProductService {
 
     public String saveANewProduct(Product product){
         ValidatableResponse response = given().baseUri(baseUri)
-                .basePath(basePath)
-                .contentType(ContentType.JSON)
+                .spec(specification)
                 .body(product)
 //                .with().auth().basic("maria","maria123")
-                .log().all()
                 .when()
                 .post("/")
                 .then()
@@ -66,11 +67,8 @@ public class ProductService {
 
     public void updateAProduct(String productId, Product product) {
         ValidatableResponse response = given()
-                .baseUri(baseUri)
-                .basePath(basePath)
-                .contentType(ContentType.JSON)
+                .spec(specification)
                 .body(product)
-                .log().all()
                 .when()
                 .put("/"+productId)
                 .then()
@@ -79,19 +77,20 @@ public class ProductService {
 
     }
 
-    public void findAProduct(String productId, Product product) {
-        ValidatableResponse getResponse = given().baseUri(baseUri)
-                .basePath(basePath)
-                .log().all()
+    public void findAProduct(String productId, Product product, int expSc) {
+        ValidatableResponse getResponse = given()
+                .spec(specification)
                 .when()
                 .get("/"+ productId)
                 .then()
                 .log().all()
-                .assertThat().statusCode(HttpStatus.SC_OK);
+                .assertThat().statusCode(expSc);
 
-        Product resProduct = getResponse.extract().body().as(Product.class);
-        product.setId(resProduct.getId());
-        Assert.assertEquals(resProduct,product,"Incorrect product details");
+        if(getResponse.extract().statusCode() == HttpStatus.SC_OK) {
+            Product resProduct = getResponse.extract().body().as(Product.class);
+            product.setId(resProduct.getId());
+            Assert.assertEquals(resProduct, product, "Incorrect product details");
+        }
     }
 
     public void deleteService(String productId) {
@@ -103,5 +102,38 @@ public class ProductService {
                 .log().all()
                 .assertThat().statusCode(HttpStatus.SC_NO_CONTENT);
 
+    }
+
+    public List<Product> readProductList(String file) {
+        URL url = getClass().getClassLoader().getResource(file);
+        Product[] products = null;
+        try {
+            products = objectMapper.readValue(url,Product[].class);
+
+        } catch (IOException e) {
+            System.out.println("File read error");
+            e.printStackTrace();
+        }
+        return Arrays.asList(products);
+    }
+
+    public void findAllProducts(List<Product> expProducts) {
+        ValidatableResponse response = given()
+                .spec(specification)
+                .when()
+                .get("/")
+                .then()
+                .log().all()
+                .assertThat().statusCode(HttpStatus.SC_OK);
+        Product[] prodArray = response.extract().as(Product[].class);
+        List<Product> actProducts = Arrays.asList(prodArray);
+        for(Product product: actProducts){
+            product.setId(null);
+        }
+        for(Product product:expProducts){
+
+            Assert.assertTrue(actProducts.contains(product)
+                    ,"Product not found - "+ product);
+        }
     }
 }

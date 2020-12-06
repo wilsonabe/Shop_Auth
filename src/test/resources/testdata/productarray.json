@@ -1,0 +1,17 @@
+[
+  {
+    "name": "Nivea lip care",
+    "description": "Hydrocare",
+    "price": 2.0
+  },
+  {
+    "name": "One A day",
+    "description": "Advanced health formula",
+    "price": 10.0
+  },
+  {
+    "name": "Coca cola",
+    "description": "A very healthy drink",
+    "price": 2.0
+  }
+]
