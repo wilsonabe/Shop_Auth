@@ -50,7 +50,19 @@ public class ProductService {
         return id;
     }
 
-    public void updateAProduct(int productId, Product product) {
+    public void updateAProduct(String productId, Product product) {
+        ValidatableResponse response = given()
+                .baseUri(baseUri)
+                .basePath(basePath)
+                .contentType(ContentType.JSON)
+                .body(product)
+                .log().all()
+                .when()
+                .put("/"+productId)
+                .then()
+                .log().all()
+                .assertThat().statusCode(HttpStatus.SC_NO_CONTENT);
+
     }
 
     public void findAProduct(String productId, Product product) {
