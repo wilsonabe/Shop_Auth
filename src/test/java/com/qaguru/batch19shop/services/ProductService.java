@@ -55,9 +55,9 @@ public class ProductService {
                 .spec(specification)
                 .body(product)
                 .with().auth().basic(user, password)
-                .when()
+        .when()
                 .post("/")
-                .then()
+        .then()
                 .log().all()
                 .assertThat().statusCode(expSc);
 
@@ -76,9 +76,9 @@ public class ProductService {
                 .spec(specification)
                 .body(product)
                 .with().auth().basic("maria","maria123")
-                .when()
+        .when()
                 .put("/"+productId)
-                .then()
+        .then()
                 .log().all()
                 .assertThat().statusCode(HttpStatus.SC_NO_CONTENT);
 
@@ -87,9 +87,9 @@ public class ProductService {
     public void findAProduct(String productId, Product product, int expSc) {
         ValidatableResponse getResponse = given()
                 .spec(specification)
-                .when()
+        .when()
                 .get("/"+ productId)
-                .then()
+        .then()
                 .log().all()
                 .assertThat().statusCode(expSc);
 
@@ -130,7 +130,7 @@ public class ProductService {
                 .spec(specification)
            .when()
                 .get("/")
-            .then()
+           .then()
                 .log().all()
                 .assertThat().statusCode(HttpStatus.SC_OK);
         Product[] prodArray = response.extract().as(Product[].class);
