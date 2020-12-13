@@ -51,17 +51,19 @@ public class ProductService {
     }
 
     public String saveANewProduct(Product product,int expSc,String user, String password) {
-        ValidatableResponse response = given().baseUri(baseUri)
-                .spec(specification)
-                .body(product)
-                .with().auth().basic(user, password)
-        .when()
-                .post("/")
-        .then()
-                .log().all()
-                .assertThat().statusCode(expSc);
+        ValidatableResponse response =
+                  given().baseUri(baseUri)
+                         .spec(specification)
+                         .body(product)
+                         .with().auth().basic(user, password)
+                  .when()
+                          .post("/")
+                  .then()
+                          .log().all()
+                          .assertThat().statusCode(expSc);
 
         String id = null;
+
         if (response.extract().statusCode() == HttpStatus.SC_CREATED) {
             response.assertThat().header("Location", containsString("/api/v1/products/"));
             String location = response.extract().header("Location");
@@ -72,26 +74,28 @@ public class ProductService {
     }
 
     public void updateAProduct(String productId, Product product) {
-        ValidatableResponse response = given()
-                .spec(specification)
-                .body(product)
-                .with().auth().basic("maria","maria123")
-        .when()
-                .put("/"+productId)
-        .then()
-                .log().all()
-                .assertThat().statusCode(HttpStatus.SC_NO_CONTENT);
+        ValidatableResponse response =
+                given()
+                        .spec(specification)
+                        .body(product)
+                        .with().auth().basic("maria","maria123")
+                .when()
+                        .put("/"+productId)
+                .then()
+                        .log().all()
+                        .assertThat().statusCode(HttpStatus.SC_NO_CONTENT);
 
     }
 
     public void findAProduct(String productId, Product product, int expSc) {
-        ValidatableResponse getResponse = given()
-                .spec(specification)
-        .when()
-                .get("/"+ productId)
-        .then()
-                .log().all()
-                .assertThat().statusCode(expSc);
+        ValidatableResponse getResponse =
+                given()
+                        .spec(specification)
+                .when()
+                        .get("/"+ productId)
+                .then()
+                        .log().all()
+                        .assertThat().statusCode(expSc);
 
         if(getResponse.extract().statusCode() == HttpStatus.SC_OK) {
             Product resProduct = getResponse.extract().body().as(Product.class);
@@ -126,13 +130,14 @@ public class ProductService {
     }
 
     public void findAllProducts(List<Product> expProducts) {
-        ValidatableResponse response = given()
-                .spec(specification)
-           .when()
-                .get("/")
-           .then()
-                .log().all()
-                .assertThat().statusCode(HttpStatus.SC_OK);
+        ValidatableResponse response =
+                given()
+                        .spec(specification)
+                .when()
+                        .get("/")
+                .then()
+                        .log().all()
+                        .assertThat().statusCode(HttpStatus.SC_OK);
         Product[] prodArray = response.extract().as(Product[].class);
         List<Product> actProducts = Arrays.asList(prodArray);
         for(Product product: actProducts){
