@@ -104,9 +104,9 @@ public class ProductService {
         given()
                 .spec(specification)
                 .with().auth().basic("maria","maria123")
-                .when()
+        .when()
                 .delete("/"+productId)
-                .then()
+        .then()
                 .log().all()
                 .assertThat().statusCode(HttpStatus.SC_NO_CONTENT);
 
@@ -128,9 +128,9 @@ public class ProductService {
     public void findAllProducts(List<Product> expProducts) {
         ValidatableResponse response = given()
                 .spec(specification)
-                .when()
+           .when()
                 .get("/")
-                .then()
+            .then()
                 .log().all()
                 .assertThat().statusCode(HttpStatus.SC_OK);
         Product[] prodArray = response.extract().as(Product[].class);
